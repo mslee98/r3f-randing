@@ -25,16 +25,37 @@ import React, { useState } from 'react';
 import { useSpring, a } from '@react-spring/three'
 
 const cardList = [
-  { text: 'Card 1', color: '#222', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 2', color: '#334', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 3', color: '#446', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 4', color: '#557', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 5', color: '#668', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 6', color: '#668', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 7', color: '#668', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 8', color: '#668', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 9', color: '#668', src: 'https://picsum.photos/250/250' },
-  { text: 'Card 10', color: '#668', src: 'https://picsum.photos/250/250' },
+  { text: 'Card 1', color: '#222', src: '/images/sample-01.png' },
+  { text: 'Card 2', color: '#334', src: '/images/sample-01.png' },
+  { text: 'Card 3', color: '#446', src: '/images/sample-01.png' },
+  { text: 'Card 4', color: '#557', src: '/images/sample-01.png' },
+  { text: 'Card 5', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 6', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 7', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 8', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 9', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 10', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 11', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 12', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 13', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 14', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 15', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 16', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 17', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 18', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 19', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 20', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 21', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 22', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 23', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 24', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 25', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 26', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 27', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 28', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 29', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 30', color: '#668', src: '/images/sample-01.png' },
+  { text: 'Card 31', color: '#668', src: '/images/sample-01.png' },
 ]
 
 function App() {
@@ -112,6 +133,20 @@ function App() {
   );
 }
 
+function easeOutBounce(x) {
+  const n1 = 7.5625;
+  const d1 = 2.75;
+
+  if (x < 1 / d1) {
+    return n1 * x * x;
+  } else if (x < 2 / d1) {
+    return n1 * (x -= 1.5 / d1) * x + 0.75;
+  } else if (x < 2.5 / d1) {
+    return n1 * (x -= 2.25 / d1) * x + 0.9375;
+  } else {
+    return n1 * (x -= 2.625 / d1) * x + 0.984375;
+  }
+}
 
 function Scene({ texture }) {
   const scroll = useScroll();
@@ -130,6 +165,19 @@ function Scene({ texture }) {
 
   const [paddingHtml, setPaddingHtml] = useState(false);
   const [robotHtml, setRobotHtml] = useState(false);
+
+  const cardRefs = useRef([]);
+  const setCardRef = (el, i) => {
+    if (el) cardRefs.current[i] = el;
+  };
+
+  const cardDelays = useRef([]);
+
+  useEffect(() => {
+    if (cardRefs.current.length > 0 && cardDelays.current.length === 0) {
+      cardDelays.current = cardRefs.current.map(() => Math.random() * 0.3); // 0 ~ 0.3초 사이 랜덤 딜레이
+    }
+  }, []);
 
   useFrame(() => {
     const offset = scroll.offset; // 0 ~ 1  
@@ -252,12 +300,51 @@ function Scene({ texture }) {
       setRobotHtml(false);
     }
 
+    if (offset >= 0.75 && offset <= 1) {
+      const progress = (offset - 0.75) / (0.99 - 0.75);
+      const startY = -15;
+      const endY = -26.8;
+    
+      cardRefs.current.forEach((ref, i) => {
+        if (!ref) return;
+      
+        const delay = cardDelays.current[i] ?? 0;
+        const localProgress = Math.max(0, progress - delay);
+        const clamped = Math.min(1, localProgress);
+
+        if (clamped <= 0) {
+          ref.visible = false;
+        } else {
+          ref.visible = true;
+        }
+      
+        if (offset >= 0.995 || clamped >= 1) {
+          ref.position.y = endY;
+          ref.rotation.x = 0;
+          ref.rotation.z = 0;
+          ref.scale.set(1, 1, 1); // 정상 크기로 고정
+        } else {
+          const bounceProgress = easeOutBounce(clamped);
+          const targetY = THREE.MathUtils.lerp(startY, endY, bounceProgress);
+          ref.position.y = THREE.MathUtils.lerp(ref.position.y, targetY, 0.15);
+      
+          // 회전 효과
+          const maxRotation = 0.5;
+          ref.rotation.x = Math.sin(clamped * Math.PI * 2) * maxRotation * (1 - clamped);
+          ref.rotation.z = Math.cos(clamped * Math.PI * 2) * maxRotation * (1 - clamped);
+      
+          // 스케일 줄였다가 회복 (0.95 ~ 1 사이로)
+          const scale = THREE.MathUtils.lerp(1.4, 1, bounceProgress);
+          ref.scale.set(scale, scale, scale);
+        }
+      });
+    }
   });
 
-  const totalWidth = 100;  // 전체 가로 공간 (Three.js 단위)
-  const totalHeight = 100;  // 전체 세로 공간
+  const totalWidth = 25;  // 전체 가로 공간 (Three.js 단위)
+  const totalHeight = 15;  // 전체 세로 공간
 
-  const columns = 5;       // 열 수 (고정 혹은 동적으로 계산)
+  const columns = 8;       // 열 수 (고정 혹은 동적으로 계산)
   const rows = Math.ceil(cardList.length / columns);
 
   const spacingX = columns > 1 ? totalWidth / (columns - 1) : 0;
@@ -321,15 +408,15 @@ function Scene({ texture }) {
       </Scroll>
 
       <Scroll>
-      <directionalLight 
-        castShadow 
-        position={[5, 10, 5]} 
-        intensity={1.2}
-      />
-      <ambientLight intensity={0.3} />
-        <group rotation={[0, -Math.PI / 8, 0]}>
+        <directionalLight 
+          castShadow 
+          position={[5, 10, 5]} 
+          intensity={1.2}
+        />
+        <ambientLight intensity={0.1} />
+        <group rotation={[0, Math.PI / 4, 0]}>
           <Grid 
-            position={[0, -26, 0]}
+            position={[0, -27, 0]}
             args={[20, 20]}
             cellSize={1}
             cellThickness={0.5}
@@ -343,50 +430,11 @@ function Scene({ texture }) {
           />
           
           {/* 그리드 위에 그림자 생성을 위한 플레인 메쉬 */}
-          <mesh position={[0, -26.01, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <mesh position={[0, -27.01, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
             <planeGeometry args={[500, 500]} />
             <shadowMaterial transparent opacity={0.3} />
           </mesh>
 
-          {/* 카드 목록 */}
-          {/* {cardList.map((card, index) => (
-            <RoundedBox
-              key={index}
-              args={[2.5, 1.5, 0.1]}
-              radius={0.1}
-              smoothness={4}
-              position={[index * 3 - 6, -25.5, 0]} // 가로 간격 3씩, 중앙 정렬
-              rotation={[-Math.PI / 2, 0, 0]}
-              castShadow
-              receiveShadow
-            >
-              <meshStandardMaterial color={card.color} />
-              <Text
-                position={[0, 0, 0.11]}
-                fontSize={0.3}
-                color="white"
-                anchorX="center"
-                anchorY="middle"
-              >
-                {card.text}
-              </Text>
-            </RoundedBox>
-          ))} */}
-          {/* {cardList.map((card, index) => {
-            const col = index % columns
-            const row = Math.floor(index / columns)
-
-            const x = col * spacingX - (columns - 1) * spacingX / 2 // 중앙 정렬
-            const y = -25.5 - row * spacingY // 아래로 쌓기 (Three.js Y는 위가 +)
-
-            return (
-              <Card
-                key={index}
-                {...card}
-                position={[x, y, 0]}
-              />
-            )
-          })} */}
           {cardList.map((card, index) => {
             const col = index % columns;
             const row = Math.floor(index / columns);
@@ -397,41 +445,61 @@ function Scene({ texture }) {
             return (
               <Card
                 key={index}
+                ref={(el) => setCardRef(el, index)}
                 {...card}
-                position={[x, -25.5, z]}
+                // position={[x, -26.8, z]}
+                position={[x, -20, z]}
               />
             )
           })}
         </group>
 
-        <Environment preset="city" />
+        <Environment preset="sunset" />
       </Scroll>
     </>
   );
 }
 
-const Card = ({ text, color, src, position }) => {
+const Card = forwardRef(({ text, color, src, position }, ref) => {
   const texture = useTexture(src)
-  const [hovered, setHovered] = useState(false)
 
-  // spring으로 position과 scale을 함께 제어
-  const { scale, positionY } = useSpring({
-    scale: hovered ? 1.1 : 1,
-    positionY: hovered ? position[1] + 0.5 : position[1],
-    config: { mass: 1, tension: 200, friction: 20 },
-  })
+  // useEffect(() => {
+  //   if (!texture) return;
+  
+  //   texture.anisotropy = 16;
+  //   texture.minFilter = THREE.LinearMipMapLinearFilter;  // 선형 보간 + Mipmap 사용
+  //   texture.magFilter = THREE.LinearFilter;              // 확대 시 선형 보간
+  //   // texture.encoding = THREE.sRGBEncoding;
+  //   texture.generateMipmaps = true;                       // Mipmap 활성화
+  //   // texture.needsUpdate = true;
+
+  //   // texture.rotation = -Math.PI / 2;
+  //   // texture.center.set(0.5, 0.5);  // 회전 중심을 텍스처 중앙으로 설정
+
+  //   texture.rotation = Math.PI / 2;
+  //   texture.center.set(0.5, 0.5);
+
+  //   texture.needsUpdate = true;
+  // }, [texture]);
+
+
 
   return (
     <a.group
-      scale={scale}
+      ref={ref}
       position-x={position[0]}
-      position-y={positionY}
+      position-y={position[1]}
       position-z={position[2]}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
     >
-      <RoundedBox
-        args={[2.5, 1.5, 0.1]}
+      <mesh >
+        <boxGeometry
+          args={[3, 0.1, 4]}
+          rotation={[-Math.PI / 4, 0, 0]}
+        />
+        <meshStandardMaterial map={texture}/>
+      </mesh>
+      {/* <RoundedBox
+        args={[3, 4, 0.1]}
         radius={0.1}
         smoothness={4}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -450,10 +518,10 @@ const Card = ({ text, color, src, position }) => {
         >
           {text}
         </Text>
-      </RoundedBox>
+      </RoundedBox> */}
     </a.group>
   )
-}
+})
 
 const RoundedBoxComponent = ({ children, position}, ref) => {
   const { size } = useThree();
@@ -699,7 +767,6 @@ const PortalSecondComponent = ({ texture }) => {
   );
 };
 
-
 function Padding({outerMatRef, innerMatRef}) {
   const groupRef = useRef();
 
@@ -736,86 +803,6 @@ function Padding({outerMatRef, innerMatRef}) {
     </group>
   )
 }
-
-// function CustomCursor() {
-//   const meshRef = useRef()
-//   const { viewport, mouse } = useThree()
-//   const velocity = useRef(new THREE.Vector3())
-//   const target = new THREE.Vector3()
-
-//   useFrame((state, delta) => {
-//     if (!meshRef.current) return
-
-//     // 마우스 좌표를 월드 좌표로 변환
-//     target.set(mouse.x * viewport.width / 2, mouse.y * viewport.height / 2, 0)
-
-//     // 탄성 움직임 (Spring-like physics)
-//     const damping = 10     // 감쇠 계수
-//     const stiffness = 100  // 탄성 계수
-
-//     const current = meshRef.current.position
-//     const force = target.clone().sub(current).multiplyScalar(stiffness)
-//     velocity.current.add(force.multiplyScalar(delta))
-//     velocity.current.multiplyScalar(Math.exp(-damping * delta)) // 감쇠
-
-//     current.add(velocity.current.clone().multiplyScalar(delta))
-
-//     // 젤리처럼 진동하는 scale
-//     const t = state.clock.getElapsedTime()
-//     const scale = 1 + Math.sin(t * 6) * 0.05
-//     meshRef.current.scale.set(scale, scale, scale)
-//   })
-
-//   return (
-//     <mesh ref={meshRef}>
-//       <sphereGeometry args={[0.1, 32, 32]} />
-//       <MeshTransmissionMaterial
-//         backside
-//         samples={32}
-//         resolution={1024}
-//         thickness={0.8}                // 더 얇게
-//         transmission={1}              // 완전히 투명
-//         roughness={0.01}              // 거의 거칠지 않게 → 매끄러운 표면
-//         ior={1.3}                     // 물처럼 약한 굴절 (유리는 1.5~1.8)
-//         chromaticAberration={0.01}    // 색 분산 효과를 아주 약하게
-//         anisotropy={0.1}              // 표면의 방향성 미세 조정
-//         distortion={0.05}             // 왜곡 거의 없음
-//         distortionScale={0.05}        // 왜곡의 세기도 낮게
-//         temporalDistortion={0.05}     // 시간에 따른 왜곡도 은은하게
-//         clearcoat={1}                 // 유광코팅
-//         clearcoatRoughness={0.01}     // 유광 표면을 더 매끄럽게
-//       />
-//     </mesh>
-//   )
-// }
-
-// const Robot = forwardRef(({ robotRef }) => {
-//   const groupRef = useRef(); // 애니메이션용 내부 ref
-//   const { scene, animations } = useGLTF('/models/robot.glb');
-//   const { actions } = useAnimations(animations, groupRef); // ✅ 내부 ref로 애니메이션 컨트롤
-
-//   useEffect(() => {
-//     if (actions && Object.keys(actions).length > 0) {
-//       actions[Object.keys(actions)[0]].play();
-//     }
-//   }, [actions]);
-
-//   // 부모에서 넘긴 robotRef에는 외부 제어용 위치 ref를 연결
-//   // useEffect(() => {
-//   //   if (robotRef) {
-//   //     robotRef.current = groupRef.current;
-      
-//   //   }
-//   // }, [robotRef]);
-
-
-//   return (
-//     <group ref={groupRef} scale={[0.5, 0.5, 0.5]} position={[0, -10, 0]}>
-//       <primitive object={scene} />
-//     </group>
-//   );
-// })
-
 
 
 export default App;
